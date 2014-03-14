@@ -109,7 +109,7 @@
         };
         
         function checkValidMove(board, newBoard) {
-          if(newBoard.length !== 55 || !/[_XO]+/.test(newBoard.split(',').join())){
+          if(!/^(?:[_XO]{7},){6}[_XO]{7}$/.test(newBoard)){
             return false;
           }
           else {
@@ -136,6 +136,7 @@
 
         $scope.game_status = function(board) {
           for (var i = 0; i < 7; i++) {
+            //Vertical
             for(var j = 0; j < 3; j++) { 
               if (board[8*j+i] != '_' && board[8*j+i] == board[8*(j+1)+i] && board[8*(j+1)+i] == board[8*(j+2)+i] && board[8*(j+2)+i] == board[8*(j+3)+i] && board[8*(j+3)+i] == board[8*(j+4)+i]) {
                 return {
@@ -144,7 +145,7 @@
                 };
               }  
             }
-            
+            //Horizontal
             for(var j = 0; j < 3; j++) {
               if (board[8*i+j] != '_' && board[8*i+j] == board[8*i+j+1] && board[8*i+j+1] == board[8*i+j+2] && board[8*i+j+2] == board[8*i+j+3] && board[8*i+j+3] == board[8*i+j+4]) {
                 return {
@@ -155,6 +156,7 @@
             }
           }
           
+          //Diagonal
           for(var i = 0; i < 3; i++) {
             for(var j = 0; j < 3; j++) {
               if (board[8*j+i] != '_' && board[8*j+i] == board[8*(j+1)+i+1] && board[8*(j+1)+i+1] == board[8*(j+2)+i+2] && board[8*(j+2)+i+2] == board[8*(j+3)+i+3] && board[8*(j+3)+i+3] == board[8*(j+4)+i+4]) {
