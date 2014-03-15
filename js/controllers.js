@@ -83,11 +83,8 @@ controller("LoginController", ["$scope", "$firebase", "$firebaseSimpleLogin",
     });
       
     $scope.set_bot_1 = function(bot) {
-      if($scope.bot1.name != bot.name){
-        $scope.reset_game();
-        $scope.bot1 = bot;
-        $scope.solution = bot.code;
-      }
+      $scope.reset_game();
+      $scope.solution = bot.code;
     };
   
     $scope.set_bot_2 = function(bot) {
@@ -232,7 +229,7 @@ controller("LoginController", ["$scope", "$firebase", "$firebaseSimpleLogin",
         //Check of board is valid       
         if (!$scope.is_move_valid($scope.current_board, new_board)) {
           current_player = (numX % 2 === 1)?'X':'O';
-          $scope.winner = "Invalid play by Bot " + current_player + " detected in last play!!!";
+          $scope.winner = "Invalid play by Bot Player " + current_player + " detected in last play!!!";
           return false;
         }
                 
