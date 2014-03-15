@@ -4,10 +4,11 @@
 <head>
   <title>Gomoku - Beat The Bots</title>
 
-  <meta property="fb:admins" content="732207250"/>
+  <meta property="fb:admins" content="732207250">
   
   <link rel="icon" type="img/ico" href="img/gomoku.ico">
   <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css">
+  <link rel="stylesheet" href="http://getbootstrap.com/assets/css/docs.min.css">
   <link rel="stylesheet" href="css/app.css">
   <script src="js/ga.js"></script>
   
@@ -24,15 +25,11 @@
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand" href="#">Game Bots</a>
+        <a class="navbar-brand" href="#">Gomoku Bots</a>
       </div>
       <div class="collapse navbar-collapse">
         <ul id="navbar" class="nav navbar-nav">
           <li id="bots" class="active"><a href="#/bots">Bots</a>
-          </li>
-          <li id="leaderboard"><a href="#/leaderboard">Leader Board</a>
-          </li>
-          <li id="about"><a href="#/about">About</a>
           </li>
         </ul>
         <ul class="nav navbar-nav navbar-right" ng-controller="LoginController">
@@ -56,6 +53,13 @@
 
   <div class="container">
     
+    <div class="bs-callout bs-callout-info">
+      <h4>Introduction</h4>
+      <p>a 7*7 Gomoku board is used here. Empty board is represented by the string '_______,_______,_______,_______,_______,_______,_______', every part separated by the comma represents one row of the board.</p>
+      <p>The Gomoku bot that you can create is basically a function that determines its next move based on current board. That is, the function will return new board based on previous board and your player mark ('X' or 'O'). Three example bots written in JavaScript are provided below.</p>
+      <p>For now <b>only Javascript</b> is supported, more language options will be added soon. Please feel free to create your first Gomoku bot now!</p>
+    </div>
+    
     <h3>Create a new Bot</h3>
     <p>
       Bot Name <br>
@@ -73,7 +77,6 @@
       <tr>
         <td>
           <select ng-model="bot1" ng:change="set_bot_1(bot1)" ng-options="bot as bot.name for bot in bots" ng-init="bot1 = bots[0]"></select>
-
         </td>
         <td>
           <select ng-model="bot2" ng:change="set_bot_2(bot2)" ng-options="bot as bot.name for bot in bots" ng-init="bot2 = bots[1]"></select>
@@ -104,22 +107,29 @@
     <br>Game History
     <br>
 
-    <table border="1" ng-repeat="board in game_history">
-      <tr ng-repeat="line in board.split(',') track by $index">
-        <td ng-repeat="char in line track by $index">
-          {{char}}
-      </tr>
-    </table>
-    Winner: {{winner}}
-    {{debug}}
-    <hr>
+    <div ng-repeat="board in game_history">
+      <table border="1">
+        <tr ng-repeat="line in board.split(',') track by $index">
+          <td ng-repeat="char in line track by $index">
+            {{char}}
+          </td>
+        </tr>
+      </table>
+      <br>
+    </div>
+    <h4>Winner: <b style="color:red">{{winner}}</b></h4>
 
+    <div class="bs-callout bs-callout-info">
+      <h4>Test your bot here</h4>
+      <p>You can select existing or self-created bot or write a draft of new bot in the 'Solution' section below. You can change the test below to verify your solution quickly.</p>
+    </div>
+    
     <select ng-model="language" ng:change="load_example_code()" ng-options="item.language as item.urlName for item in supported_langugages"></select>
     <br>
-    <button class="btn btn-default" type="submit" value="verify {{language}} code" ng-click="verify({solution: solution, tests: tests})">verify {{language}} code</button>
-    <br>Status: {{status}} Result: <pre>{{result}}</pre>
-    <br>Is Solved: <b>{{result.solved}}</b>
     <br>
+    <button class="btn btn-default" type="submit" value="verify {{mapShowName(language)}} code" ng-click="verify({solution: solution, tests: tests})">verify {{mapShowName(language)}} code</button>
+    <br><br>Status: {{status}} Result: <pre>{{result}}</pre>
+    Is Solved: <b>{{result.solved}}</b>
     <table border=1 bgcolor=#FFFFFF>
       <tr>
         <th>Called</th>
@@ -135,19 +145,19 @@
         <td ng-show="!line.correct" bgcolor=#FF0000>{{line.correct}}</td>
       </tr>
     </table>
+    <br>
 
-
-    Player Solution:
+    <h4>Solution:</h4>
     <div>
       <textarea ng-model="solution" name="solution" rows="8" cols="50"></textarea>
     </div>
-    Tests:
+    <h4>Tests:</h4>
     <div>
       <textarea ng-model="tests" name="tests" rows="8" cols="50"></textarea>
     </div>
-
   </div>
-
+  <br>
+  <br>
   <span ng-init="load_example_code()"></span>
   
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.14/angular.min.js"></script>

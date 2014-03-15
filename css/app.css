@@ -1,22 +1,25 @@
-
-    .ace-editor {
-      width: 100%;
-      height: 200px;
-    }
-    #contents {
-      width: 50%;
-      height: 50%;
-      position: absolute;
-      top: 0;
-    }
+.ace-editor {
+  width: 100%;
+  height: 200px;
+}
+.bs-callout-info
+{
+  background-color: #f4f8ff
+}
+#contents {
+  width: 50%;
+  height: 50%;
+  position: absolute;
+  top: 0;
+}
     /* app css stylesheet */
-    body {
-      padding-top: 50px;
-    }
-    .starter-template {
-      padding: 40px 15px;
-      text-align: center;
-    }
-    table {
-      min-width:3.5em;
-    }
+body {
+  padding-top: 50px;
+}
+.starter-template {
+  padding: 40px 15px;
+  text-align: center;
+}
+table {
+  min-width:3.5em;
+}

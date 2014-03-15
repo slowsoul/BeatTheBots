@@ -8,14 +8,19 @@ controller("LoginController", ["$scope", "$firebase", "$firebaseSimpleLogin",
 .controller("FirstController", ["$scope", "$resource",
   function($scope, $resource) {
     $scope.supported_langugages = [{
-      language: 'python',
-      urlName: 'python'
-    }, {
       language: 'js',
-      urlName: 'js'
+      urlName: 'JavaScript'
     }];
+    
+    $scope.mapShowName = function(lang){
+      switch(lang){
+        case 'js': return 'JavaScript'; break;
+      }
+    }
 
     $scope.language = 'js';
+    $scope.jsbots = [];
+    $scope.pythonbots = [];
     $scope.bots = [];
     $scope.new_bot = {
       name: 'New Bot',
@@ -78,12 +83,15 @@ controller("LoginController", ["$scope", "$firebase", "$firebaseSimpleLogin",
     });
       
     $scope.set_bot_1 = function(bot) {
-      $scope.bot1 = bot;
-      $scope.solution = bot.code;
+      if($scope.bot1.name != bot.name){
+        $scope.reset_game();
+        $scope.bot1 = bot;
+        $scope.solution = bot.code;
+      }
     };
   
     $scope.set_bot_2 = function(bot) {
-      $scope.bot2 = bot;
+      $scope.reset_game();
       $scope.solution = bot.code;
     };
           
@@ -182,6 +190,7 @@ controller("LoginController", ["$scope", "$firebase", "$firebaseSimpleLogin",
     $scope.reset_game = function() {
       $scope.current_board = "_______,_______,_______,_______,_______,_______,_______";
       $scope.game_history = [];
+      $scope.winner = "";
     };
   
     $scope.reset_game();
