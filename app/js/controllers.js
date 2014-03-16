@@ -92,17 +92,7 @@ controller("LoginController", ["$scope", "$firebase", "$firebaseSimpleLogin",
       $scope.solution = bot.code;
     };
           
-    $scope.is_move_valid = function(board, newBroad) {
-      if (checkValidMove(board, newBroad)) {
-        console.log("returning true. board " + board.indexOf('_') + " move " + newBroad.indexOf('_'));
-        return true;
-      } else {
-        console.log("returning false");
-        return false;
-      }
-    };
-          
-    this.checkValidMove = function(board, newBoard) {
+    $scope.is_move_valid = function(board, newBoard) {
       if(!/^(?:[_XO]{7},){6}[_XO]{7}$/.test(newBoard)){
         return false;
       }

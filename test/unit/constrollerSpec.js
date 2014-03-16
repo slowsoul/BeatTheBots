@@ -18,7 +18,7 @@ describe('FirstController', function() {
     it("should return true for a good move", function(){
       var board = "_______,__XX___,_______,_______,_______,_______,_______";
       var newBroad = "_______,__XXO__,_______,_______,_______,_______,_______";
-      var result = ctrl.checkValidMove(board, newBroad);
+      var result = $scope.is_move_valid(board, newBroad);
  
       expect(result).to.equal(true);
     });
@@ -27,7 +27,7 @@ describe('FirstController', function() {
     it("should return false for bad move #1", function(){
       var board = "X______,_______,_______,_______,_______,_______,_______";
       var newBroad = "_______,_______,_______,_______,_______,_______,_______";
-      var result = ctrl.checkValidMove(board, newBroad);
+      var result = $scope.is_move_valid(board, newBroad);
  
       expect(result).to.equal(false);
     });
@@ -35,7 +35,7 @@ describe('FirstController', function() {
     it("should return false for bad move #2", function(){
       var board = "_______,__XX___,_______,_______,_______,_______,_______";
       var newBroad = "_______,_XXO___,_______,_______,_______,_______,_______";
-      var result = ctrl.checkValidMove(board, newBroad);
+      var result = $scope.is_move_valid(board, newBroad);
  
       expect(result).to.equal(false);
     });
@@ -43,7 +43,7 @@ describe('FirstController', function() {
     it("should return false for bad move #3", function(){
       var board = "_______,__XX___,_______,_______,_______,_______,_______";
       var newBroad = "_______,__XXO__,_______,_______,_________,_______,_______";
-      var result = ctrl.checkValidMove(board, newBroad);
+      var result = $scope.is_move_valid(board, newBroad);
  
       expect(result).to.equal(false);
     });
