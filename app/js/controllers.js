@@ -102,7 +102,7 @@ controller("LoginController", ["$scope", "$firebase", "$firebaseSimpleLogin",
       }
     };
           
-    function checkValidMove(board, newBoard) {
+    this.checkValidMove = function(board, newBoard) {
       if(!/^(?:[_XO]{7},){6}[_XO]{7}$/.test(newBoard)){
         return false;
       }
