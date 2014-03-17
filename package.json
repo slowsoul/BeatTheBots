@@ -16,9 +16,6 @@
     "chai": "~1.9.0",
     "karma-chrome-launcher": "~0.1.2",
     "karma-chai-plugins": "^0.2.0",
-    "karma-mocha-reporter": "^0.2.2",
-    "karma-story-reporter": "^0.2.2",
-    "karma-nested-reporter": "^0.1.1",
     "karma-spec-reporter": "0.0.10"
   }
 }
