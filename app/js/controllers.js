@@ -5,8 +5,12 @@ controller("LoginController", ["$scope", "$firebase", "$firebaseSimpleLogin",
     $scope.auth = $firebaseSimpleLogin(ref);
   }
 ])
-.controller("FirstController", ["$scope", "$resource",
+.controller("PlaygroundController", ["$scope", "$resource",
   function($scope, $resource) {
+
+    $('#navbar').children('.active').removeClass('active');
+    $('#playground').addClass('active');
+
     $scope.supported_langugages = [{
       language: 'js',
       urlName: 'JavaScript'
@@ -250,5 +254,17 @@ controller("LoginController", ["$scope", "$firebase", "$firebaseSimpleLogin",
       $scope.result = result;
       return result;
     };
+  }
+])
+.controller("ArenaController", ["$scope", "$resource",
+  function($scope, $resource) {
+    $('#navbar').children('.active').removeClass('active');
+    $('#arena').addClass('active');
+  }
+])
+.controller("StatsController", ["$scope", "$resource",
+  function($scope, $resource) {
+    $('#navbar').children('.active').removeClass('active');
+    $('#stats').addClass('active');
   }
 ]);

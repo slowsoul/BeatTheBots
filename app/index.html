@@ -14,8 +14,7 @@
   
 </head>
 
-<body ng-controller="FirstController">
-
+<body>
   <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
     <div class="container" ng-cloak>
       <div class="navbar-header">
@@ -29,8 +28,9 @@
       </div>
       <div class="collapse navbar-collapse">
         <ul id="navbar" class="nav navbar-nav">
-          <li id="bots" class="active"><a href="#/bots">Bots</a>
-          </li>
+          <li id="playground" class="active"><a href="#/playground" class="glyphicon glyphicon-tree-conifer"> Playground</a></li>
+          <li id="arena"><a href="#/arena" class="glyphicon glyphicon-tower"> Arena</a></li>
+          <li id="stats"><a href="#/stats" class="glyphicon glyphicon-stats"> Statistics</a></li>
         </ul>
         <ul class="nav navbar-nav navbar-right" ng-controller="LoginController">
           <li ng-show="auth.user">
@@ -39,11 +39,12 @@
           <li ng-show="auth.user">
             <a href="" ng-click="auth.$logout()">Logout</a>
           </li>
-          <li>
-            <a href="" ng-hide="auth.user" ng-click="auth.$login('facebook')">Login with Facebook</a>
-          </li>
-          <li>
-            <a href="" ng-hide="auth.user" ng-click="auth.$login('google')">Login with Google</a>
+          <li class="dropdown" ng-hide="auth.user">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Sign in <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li><a href="" ng-click="auth.$login('facebook')">with Facebook account</a></li>
+              <li><a href="" ng-click="auth.$login('google')">with Google account</a></li>
+            </ul>
           </li>
         </ul>
       </div>
@@ -52,116 +53,11 @@
   </div>
 
   <div class="container">
-    
-    <div class="bs-callout bs-callout-info">
-      <h4>Introduction</h4>
-      <p>a 7*7 Gomoku board is used here. Empty board is represented by the string '_______,_______,_______,_______,_______,_______,_______', every part separated by the comma represents one row of the board.</p>
-      <p>The Gomoku bot that you can create is basically a function that determines its next move based on current board. That is, the function will return new board based on previous board and your player mark ('X' or 'O'). Three example bots written in JavaScript are provided below.</p>
-      <p>Once you have selected two bots, you can make them play and watch the steps and result by hitting the <b>Play bot 1 against bot 2</b> button.</p>
-      <p><b>Note:</b> For now, <b>only Javascript</b> is supported, more language options will be added soon. Please feel free to create your first Gomoku bot now!</p>
-    </div>
-    
-    <h3>Create a new Bot</h3>
-    <p>
-      Bot Name <br>
-      <textarea ng-model='new_bot.name'></textarea>
-    </p>
-    <p>
-      Bot Logic <br>
-      <textarea ng-model='new_bot.code' rows="8" cols="50"></textarea>
-    </p>
-    <button class="btn btn-default" type="submit" ng-click="add_bot()">Add Bot</button>
-    
-    <h3>Pick two Gomoku bots</h3>
-
-    <table>
-      <tr>
-        <td>
-          <select ng-model="bot1" ng:change="set_bot_1(bot1)" ng-options="bot as bot.name for bot in bots" ng-init="bot1 = bots[0]"></select>
-        </td>
-        <td>
-          <select ng-model="bot2" ng:change="set_bot_2(bot2)" ng-options="bot as bot.name for bot in bots" ng-init="bot2 = bots[1]"></select>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          {{bot1.name}}
-        </td>
-        <td>
-          {{bot2.name}}
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <textarea ng-model="bot1.code" name="solution" rows="8" cols="40"></textarea>
-        </td>
-        <td>
-          <textarea ng-model="bot2.code" name="solution" rows="8" cols="40"></textarea>
-        </td>
-      </tr>
-    </table>
-    <br>
-
-    <button class="btn btn-default" type="submit" ng-click="play_game(bot1,bot2)">Play bot 1 against bot 2</button>
-    <button class="btn btn-default" type="submit" ng-click="reset_game()">Reset Game</button>
-
-    <br>Game History
-    <br>
-
-    <div ng-repeat="board in game_history">
-      <table border="1">
-        <tr ng-repeat="line in board.split(',') track by $index">
-          <td ng-repeat="char in line track by $index">
-            {{char}}
-          </td>
-        </tr>
-      </table>
-      <br>
-    </div>
-    <h4>Winner: <b style="color:red">{{winner}}</b></h4>
-
-    <div class="bs-callout bs-callout-info">
-      <h4>Test your bot here</h4>
-      <p>You can select existing or self-created bot or write a draft of new bot in the 'Solution' section below. You can change the test below to verify your solution quickly.</p>
-    </div>
-    
-    <select ng-model="language" ng:change="load_example_code()" ng-options="item.language as item.urlName for item in supported_langugages"></select>
-    <br>
-    <br>
-    <button class="btn btn-default" type="submit" value="verify {{mapShowName(language)}} code" ng-click="verify({solution: solution, tests: tests})">verify {{mapShowName(language)}} code</button>
-    <br><br>Status: {{status}} Result: <pre>{{result}}</pre>
-    Is Solved: <b>{{result.solved}}</b>
-    <table border=1 bgcolor=#FFFFFF>
-      <tr>
-        <th>Called</th>
-        <th>Expected</th>
-        <th>Recieved</th>
-        <th>Correct</th>
-      </tr>
-      <tr ng-repeat="line in result.results">
-        <td>{{line.call}}</td>
-        <td>{{line.expected}}</td>
-        <td>{{line.received}}</td>
-        <td ng-show="line.correct" bgcolor=#00FF00>{{line.correct}}</td>
-        <td ng-show="!line.correct" bgcolor=#FF0000>{{line.correct}}</td>
-      </tr>
-    </table>
-    <br>
-
-    <h4>Solution:</h4>
-    <div>
-      <textarea ng-model="solution" name="solution" rows="8" cols="50"></textarea>
-    </div>
-    <h4>Tests:</h4>
-    <div>
-      <textarea ng-model="tests" name="tests" rows="8" cols="50"></textarea>
-    </div>
+    <div ng-view></div>
   </div>
-  <br>
-  <br>
-  <span ng-init="load_example_code()"></span>
   
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.14/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.14/angular-route.min.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.14/angular-resource.min.js"></script>
   <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
   <script src="//cdn.firebase.com/js/client/1.0.6/firebase.js"></script>
