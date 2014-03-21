@@ -74,7 +74,7 @@ app.get('/bot', function(req, res) {
   var params = url.parse(req.url, true).query;
   
   if(!params['uid']) {
-    res.status(400);
+    res.send(400);
   }
   else {
     if(params['pickOp'] && params['pickOp'] == '1'){
@@ -195,7 +195,7 @@ app.post('/play', function(req, res) {
         jsonrequest = {solution: code, tests: defaultTest[lang](board, marker)};
       }
       else {
-        res.status(400);
+        res.send(400);
         return;
       }
     }
@@ -253,7 +253,7 @@ app.post('/play', function(req, res) {
     request.write(json_data);
     request.end();
   } else {
-    res.status(400);
+    res.send(400);
   }
 });
 
@@ -268,18 +268,27 @@ app.post('/rating', function(req, res) {
     //bot A will always be current user's bot
     //update rating of both bot A and B, then save the game data to game record collection
     //return the new rating for user's bot
-    mongo.BotCollection.findOne({_id: mybid}, {fields: {rating: 1, _id: 0}}, function(err, result){
-      myRating = result.rating;
+    mongo.BotCollection.findOne({_id: ObjectID(mybid)}, {fields: {rating: 1, _id: 0}}, function(err, result){
+
       if(err) {
         res.json({status: 'fail', description: 'internal error'});
         return;
       }
-      mongo.BotCollection.findOne({_id: opbid}, {fields: {rating: 1, _id: 0}}, function(err, result){
-        opRating = result.rating;
+      if(!result) {
+        res.json({status: 'fail', description: 'mybid not exist'});
+        return;
+      }
+      myRating = result.rating;
+      mongo.BotCollection.findOne({_id: ObjectID(opbid)}, {fields: {rating: 1, _id: 0}}, function(err, result){
         if(err) {
           res.json({status: 'fail', description: 'internal error'});
           return;
         }
+        if(!result) {
+          res.json({status: 'fail', description: 'opbid not exist'});
+          return;
+        }
+        opRating = result.rating;
         //calculate rating change
         var myActualScore = (iwin == '1')?1:((iwin == '0')?0.5:0);
         var myExpectedScore = 1 / (1 + Math.pow(10, (opRating - myRating)/400));
@@ -296,8 +305,8 @@ app.post('/rating', function(req, res) {
         myRatingChange = Math.floor(myRatingChange);
 
         //update rating for both bots
-        mongo.BotCollection.update({_id: mybid}, {$set: {rating: myRating + myRatingChange}}, {w: 1}, function(err, result){
-          mongo.BotCollection.update({_id: opbid}, {$set: {rating: opRating - myRatingChange}}, {w: 1}, function(err, result){
+        mongo.BotCollection.update({_id: ObjectID(mybid)}, {$set: {rating: myRating + myRatingChange}, $inc: {gameCount: 1}}, {w: 1}, function(err, result){
+          mongo.BotCollection.update({_id: ObjectID(opbid)}, {$set: {rating: opRating - myRatingChange}, $inc: {gameCount: 1}}, {w: 1}, function(err, result){
             mongo.GameRecordCollection.insert({finishTime: new Date(), bidA: mybid, bidB: opbid, winner: iwin, ratingA: myRating, ratingB: opRating, ratingChangeA: myRatingChange}, {w: 1}, function(err, result){
               res.json({status: 'success', myNewRating: myRating + myRatingChange});  
             });
@@ -307,7 +316,7 @@ app.post('/rating', function(req, res) {
       });
     });
   } else {
-    res.status(400);
+    res.send(400);
   }
 });
 
@@ -341,7 +350,7 @@ app.put('/bot', function(req, res) {
       }
     });
   } else {
-    res.status(400);
+    res.send(400);
   }
 });
 
