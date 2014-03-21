@@ -256,6 +256,12 @@ controller("LoginController", ["$scope", "$firebase", "$firebaseSimpleLogin",
     };
   }
 ])
+.controller("WorkshopController", ["$scope", "$resource",
+  function($scope, $resource) {
+    $('#navbar').children('.active').removeClass('active');
+    $('#workshop').addClass('active');
+  }
+])
 .controller("ArenaController", ["$scope", "$resource",
   function($scope, $resource) {
     $('#navbar').children('.active').removeClass('active');

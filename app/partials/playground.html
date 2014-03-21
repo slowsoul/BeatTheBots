@@ -54,10 +54,10 @@
 <br>
 
 <div ng-repeat="board in game_history">
-  <table border="1">
+  <table class="table table-bordered" style="width:175px;height:175px;text-align:center" >
     <tr ng-repeat="line in board.split(',') track by $index">
-      <td ng-repeat="char in line track by $index">
-        {{char}}
+      <td ng-repeat="char in line track by $index" style="width:25px;height:25px;padding:0;border-color:black">
+        {{(char=='_')?' ':char}}
       </td>
     </tr>
   </table>

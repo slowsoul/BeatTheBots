@@ -7,6 +7,7 @@ var express = require('express'),
   btoa = require('btoa');
 
 var MongoClient = require('mongodb').MongoClient,
+    ObjectID = require('mongodb').ObjectID,
     MONGO_PASSWORD = process.env.MONGO_PASSWORD, 
     connection_string = 'mongodb://gomoku-admin:' + MONGO_PASSWORD + '@ds033047.mongolab.com:33047/gomoku-crowd-bots',
     BotCollection = 'Bot';
@@ -35,6 +36,38 @@ app.get('/', function(req, res) {
     res.redirect('app/index.html');
 });
 
+app.get('/resetdb', function(req, res) {
+
+  //reset Bot collection and GameRecord collection
+  MongoClient.connect(connection_string, function(err, db) {
+    if(err){
+      res.json({status: 'fail', description: 'connection failed'});
+      return;
+    }
+
+    var collection = db.collection(BotCollection);
+
+    collection.remove(function(err, result){
+      if(err){
+        res.json({status: 'fail', description: 'remove failed'});
+      }
+      else{
+        collection = db.collection(GameRecordCollection);
+        collection.remove(function(err, result){
+          if(err){
+            res.json({status: 'fail', description: 'remove failed'});
+          }
+          else{
+            res.json({status: 'success'});
+          }
+          db.close();
+        })
+      }   
+    });
+  });
+
+});
+
 app.get('/bot', function(req, res) {
   var params = url.parse(req.url, true).query;
   
@@ -58,6 +91,25 @@ app.get('/bot/:bid', function(req, res) {
   var bid = req.params.bid;
 
   //get the game record data of this bot from database
+  MongoClient.connect(connection_string, function(err, db) {
+    if(err){
+      res.json({status: 'fail', description: 'connection failed'});
+      return;
+    }
+
+    var collection = db.collection(BotCollection);
+
+    collection.findOne({_id: ObjectID(bid)}, {fields:{_id: 0}}, function(err, result){
+      if(err){
+        res.json({status: 'fail', description: 'internal error'});
+      }
+      else{
+        res.json({status: 'success', bot: result});
+      }
+      db.close();
+    });
+  });
+
 });
 
 app.get('/verify', function(req, res) {
@@ -154,15 +206,49 @@ app.post('/rating', function(req, res) {
 app.put('/bot', function(req, res) {
   var lang = req.body['lang'],
     code = req.body['code'],
-    uid = req.body['uid'];
+    uid = req.body['uid'],
+    name = req.body['name'];
 
-  if(lang && code && uid){
-    //save new bot to bot collection in database
+  if(lang && code && uid && name){
+    //check if name is duplicated
+    //if not, save new bot to bot collection in database with initial rating
+    MongoClient.connect(connection_string, function(err, db) {
+      if(err){
+        res.json({status: 'fail', description: 'connection failed'});
+        return;
+      }
+
+      var collection = db.collection(BotCollection);
+
+      collection.findOne({name: name, uid: uid}, function(err, result){
+        if(err){
+          res.json({status: 'fail', description: 'interal error'});
+        }
+        else{
+          if(result){
+            res.json({status: 'fail', description: 'duplicate bot name'});
+            db.close();
+          }
+          else{
+            collection.insert({name: name, uid: uid, code: code, lang: lang, gameCount: 0, rating: 1450, createTime: new Date()}, {w:1}, function(err, result){
+              if(err){
+                res.json({status: 'fail', description: 'internal error'});
+              }
+              else{
+                res.json({status: 'success', bid: result[0]._id});
+              }
+              db.close();
+            });
+          }
+        }
+      });
+    });
   } else {
     res.status(400);
   }
 });
 
+/*
 app.delete('/bot', function(req, res) {
   var bid = req.body['bid'],
     uid = req.body['uid'];
@@ -173,7 +259,7 @@ app.delete('/bot', function(req, res) {
   } else {
     res.status(400);
   }
-});
+});*/
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log("Express server listening on port " + app.get('port'));
