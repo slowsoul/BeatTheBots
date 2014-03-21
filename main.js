@@ -203,6 +203,8 @@ app.post('/play', function(req, res) {
     var json_data = querystring.stringify({
       jsonrequest : JSON.stringify(jsonrequest)
     });
+    console.log(jsonrequest);
+    console.log(JSON.stringify(jsonrequest));
     console.log(json_data);
 
     var options = {
