@@ -100,13 +100,28 @@ app.get('/bot', function(req, res) {
 app.get('/bot/:bid', function(req, res) {
   var bid = req.params.bid;
 
-  //get the game record data of this bot from database
+  //get the basic data of this bot from database
   mongo.BotCollection.findOne({_id: ObjectID(bid)}, {fields: {_id: 0}}, function(err, result){
     if(err){
       res.json({status: 'fail', description: 'internal error'});
     }
     else{
       res.json({status: 'success', bot: result});
+    }
+  });
+
+});
+
+app.get('/record/:bid', function(req, res) {
+  var bid = req.params.bid;
+
+  //get the game record data of this bot from database
+  mongo.GameRecordCollection.find({$or: [{bidA: bid}, {bidB: bid}]}, {fields: {_id: 0}, sort: {finishTime: -1}}).toArray(function(err, result){
+    if(err){
+      res.json({status: 'fail', description: 'internal error'});
+    }
+    else{
+      res.json({status: 'success', records: result});
     }
   });
 
@@ -203,9 +218,6 @@ app.post('/play', function(req, res) {
     var json_data = querystring.stringify({
       jsonrequest : JSON.stringify(jsonrequest)
     });
-    console.log(jsonrequest);
-    console.log(JSON.stringify(jsonrequest));
-    console.log(json_data);
 
     var options = {
       host : 'ec2-54-251-204-6.ap-southeast-1.compute.amazonaws.com',
@@ -353,16 +365,3 @@ app.put('/bot', function(req, res) {
     res.send(400);
   }
 });
-
-/*
-app.delete('/bot', function(req, res) {
-  var bid = req.body['bid'],
-    uid = req.body['uid'];
-
-  if(bid && uid){
-    //check if bid is bound to uid
-    //if so, delete specified bot from bot collection in database
-  } else {
-    res.status(400);
-  }
-});*/
