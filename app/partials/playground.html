@@ -7,9 +7,13 @@
 </div>
 
 <h3>Create a new Bot</h3>
-<p>
+<p style="display:inline-block">
   Bot Name <br>
   <textarea ng-model='new_bot.name'></textarea>
+</p>
+<p style="margin-left:60px;display:inline-block">
+  Language <br>
+  <select ng-model="new_bot.lang" ng-change="init_new_bot(new_bot.lang)" ng-options="item.language as item.urlName for item in supported_langugages"></select>
 </p>
 <p>
   Bot Logic <br>

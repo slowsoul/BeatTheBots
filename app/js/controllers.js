@@ -14,47 +14,62 @@ controller("LoginController", ["$scope", "$firebase", "$firebaseSimpleLogin",
     $scope.supported_langugages = [{
       language: 'js',
       urlName: 'JavaScript'
+    },{
+      language: 'python',
+      urlName: 'Python'
     }];
+
+    bot_template = {
+      'js': "function play_game(board,side) {\n  \n}",
+      'python': "def play_game(board,side):\n  "
+    };
     
     $scope.mapShowName = function(lang){
       switch(lang){
         case 'js': return 'JavaScript'; break;
+        case 'python': return 'Python'; break;
       }
     }
 
     $scope.language = 'js';
-    $scope.jsbots = [];
-    $scope.pythonbots = [];
     $scope.bots = [];
     $scope.new_bot = {
-      name: 'New Bot',
-      language: 'js',
+      name: 'New JavaScript Bot',
+      lang: 'js',
+      code: "function play_game(board,side) {\n  \n}"
+    };
+    simple_js_bot = {
+      name: "Simple JS Bot",
+      lang: 'js',
       code: "function play_game(board,side) {\n  return board.replace('_',side);\n}"
     };
-    first_bot = {
-      name: "First Bot",
-      language: 'js',
-      code: "function play_game(board,side) {\n  return board.replace('_',side);\n}"
+    skip_python_bot = {
+      name: "Skip Python Bot",
+      lang: 'python',
+      code: "def play_game(board,side):\n  if board.find('_______') > -1:\n    return board.replace('_______', '______'+side, 1);\n  else:\n    return board.replace('_',side,1);"
     };
-    skip_bot = {
-      name: "Skip Bot",
-      language: 'js',
-      code: "function play_game(board,side) {\n  if(board.indexOf('_______') > -1) {\n    return board.replace('_______','______'+side);\n  } else {\n    return board.replace('_',side);\n  }\n}"
-    };
-    bad_bot = {
-      name: "Bad Bot",
-      language: 'js',
+    bad_js_bot = {
+      name: "Bad JS Bot",
+      lang: 'js',
       code: "function play_game(board,side) {\n  return '_______,_______,_______,_______,_______,_______,_______';\n}"
     };
         
-    $scope.add_bot = function() {
-      $scope.bots.push($scope.new_bot);
-      $scope.new_bot = {};
+    $scope.init_new_bot = function(lang) {
+      $scope.new_bot.name = "New " + $scope.mapShowName(lang) + " bot";
+      $scope.new_bot.code = bot_template[lang];
+      $scope.new_bot.lang = lang;
     }
 
-    $scope.bots.push(first_bot);
-    $scope.bots.push(skip_bot);
-    $scope.bots.push(bad_bot);
+    $scope.add_bot = function() {
+      console.log($scope.new_bot);
+      $scope.bots.push($scope.new_bot);
+      $scope.new_bot = {};
+      $scope.init_new_bot('js');
+    }
+
+    $scope.bots.push(simple_js_bot);
+    $scope.bots.push(skip_python_bot);
+    $scope.bots.push(bad_js_bot);
   
     //Some example code for each language.
     $scope.d = {
@@ -97,15 +112,16 @@ controller("LoginController", ["$scope", "$firebase", "$firebaseSimpleLogin",
       console.log("Playing bot 1 against bot 2");
   
       data = {
-        lang: $scope.language,
         board: $scope.current_board
       };
       //Count X's to see who's turn it is.
       numX = $scope.current_board.split("_").length - 1;
       if (numX % 2 === 1) {
+        data.lang = playerX.lang;
         data.code = playerX.code;
         data.marker = 'X';
       } else {
+        data.lang = playerO.lang;
         data.code = playerO.code;
         data.marker = 'O';
       }
@@ -126,6 +142,8 @@ controller("LoginController", ["$scope", "$firebase", "$firebaseSimpleLogin",
         if (!res.gameStatus.finished) {
           $scope.play_game(playerX, playerO);
         } else {
+          //TODO if in arena, invoke rating API here to update rating
+          //Q if two bots of same user plays, will the rating be updated?
           $scope.winner = res.gameStatus.winner;
         }
       });
