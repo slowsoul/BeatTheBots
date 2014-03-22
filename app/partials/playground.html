@@ -73,7 +73,7 @@
 <select ng-model="language" ng:change="load_example_code()" ng-options="item.language as item.urlName for item in supported_langugages"></select>
 <br>
 <br>
-<button class="btn btn-default" type="submit" value="verify {{mapShowName(language)}} code" ng-click="verify({solution: solution, tests: tests})">verify {{mapShowName(language)}} code</button>
+<button class="btn btn-default" type="submit" value="verify {{mapShowName(language)}} code" ng-click="verify({code: solution, test: tests})">verify {{mapShowName(language)}} code</button>
 <br>
 <br>
 Status: {{status}} Result: <pre>{{result}}</pre>

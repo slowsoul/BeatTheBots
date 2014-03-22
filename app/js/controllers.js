@@ -5,8 +5,8 @@ controller("LoginController", ["$scope", "$firebase", "$firebaseSimpleLogin",
     $scope.auth = $firebaseSimpleLogin(ref);
   }
 ])
-.controller("PlaygroundController", ["$scope", "$resource",
-  function($scope, $resource) {
+.controller("PlaygroundController", ["$scope", "$http",
+  function($scope, $http) {
 
     $('#navbar').children('.active').removeClass('active');
     $('#playground').addClass('active');
@@ -74,17 +74,6 @@ controller("LoginController", ["$scope", "$firebase", "$firebaseSimpleLogin",
       $scope.solution = $scope.d[$scope.language]["solution"];
       $scope.tests = $scope.d[$scope.language]["tests"];
     };
-  
-    // For the loadbalancer version with fewer options. 
-    $scope.VerifierModel = $resource('/verify', {}, {
-      'get': {
-        method: 'GET',
-        isArray: false,
-        params: {
-          lang: $scope.language
-        }
-      }
-    });
       
     $scope.set_bot_1 = function(bot) {
       $scope.reset_game();
@@ -94,88 +83,6 @@ controller("LoginController", ["$scope", "$firebase", "$firebaseSimpleLogin",
     $scope.set_bot_2 = function(bot) {
       $scope.reset_game();
       $scope.solution = bot.code;
-    };
-          
-    $scope.is_move_valid = function(board, newBoard) {
-      if(!/^(?:[_XO]{7},){6}[_XO]{7}$/.test(newBoard)){
-        return false;
-      }
-      else {
-        var totalDiff = 0;
-        for(var i=0;i<55;i++) {
-          if(newBoard[i] != board[i]){
-            if((board[i] == '_') && (newBoard[i] != '_')){
-              totalDiff++;
-            }
-            else {
-              return false;
-            }
-          }
-        }
-    
-        if(totalDiff == 1){
-          return true;
-        }
-        else {
-          return false;
-        }
-      }
-    }
-  
-    $scope.game_status = function(board) {
-      for (var i = 0; i < 7; i++) {
-        //Vertical
-        for(var j = 0; j < 3; j++) { 
-          if (board[8*j+i] != '_' && board[8*j+i] == board[8*(j+1)+i] && board[8*(j+1)+i] == board[8*(j+2)+i] && board[8*(j+2)+i] == board[8*(j+3)+i] && board[8*(j+3)+i] == board[8*(j+4)+i]) {
-            return {
-              finished: true,
-              winner: board[8*j+i]
-            };
-          }  
-        }
-        //Horizontal
-        for(var j = 0; j < 3; j++) {
-          if (board[8*i+j] != '_' && board[8*i+j] == board[8*i+j+1] && board[8*i+j+1] == board[8*i+j+2] && board[8*i+j+2] == board[8*i+j+3] && board[8*i+j+3] == board[8*i+j+4]) {
-            return {
-              finished: true,
-              winner: board[8*i+j]
-            };
-          }  
-        }
-      }
-            
-      //Diagonal
-      for(var i = 0; i < 3; i++) {
-        for(var j = 0; j < 3; j++) {
-          if (board[8*j+i] != '_' && board[8*j+i] == board[8*(j+1)+i+1] && board[8*(j+1)+i+1] == board[8*(j+2)+i+2] && board[8*(j+2)+i+2] == board[8*(j+3)+i+3] && board[8*(j+3)+i+3] == board[8*(j+4)+i+4]) {
-            return {
-              finished: true,
-              winner: board[8*j+i]
-            };
-          }     
-        }
-              
-        for(var j = 4; j < 7; j++) {
-          if (board[8*j+i] != '_' && board[8*j+i] == board[8*(j-1)+i+1] && board[8*(j-1)+i+1] == board[8*(j-2)+i+2] && board[8*(j-2)+i+2] == board[8*(j-3)+i+3] && board[8*(j-3)+i+3] == board[8*(j-4)+i+4]) {
-            return {
-              finished: true,
-              winner: board[8*j+i]
-            };
-          } 
-        }
-      }
-            
-      //Full board
-      if (board.indexOf('_') === -1) {
-        return {
-          finished: true,
-          winner: 'Tie'
-        };
-      } else {
-        return {
-          finished: false
-        }
-      }
     };
   
     $scope.reset_game = function() {
@@ -189,70 +96,53 @@ controller("LoginController", ["$scope", "$firebase", "$firebaseSimpleLogin",
     $scope.play_game = function(playerX, playerO) {
       console.log("Playing bot 1 against bot 2");
   
+      data = {
+        lang: $scope.language,
+        board: $scope.current_board
+      };
       //Count X's to see who's turn it is.
       numX = $scope.current_board.split("_").length - 1;
       if (numX % 2 === 1) {
-        tests = "assert_equal('ANYTHING',play_game('" + $scope.current_board + "','X'))";
-        data = {
-          solution: playerX.code,
-          tests: tests
-        };
+        data.code = playerX.code;
+        data.marker = 'X';
       } else {
-        tests = "assert_equal('ANYTHING',play_game('" + $scope.current_board + "','O'))";
-        data = {
-          solution: playerO.code,
-          tests: tests
-        };
+        data.code = playerO.code;
+        data.marker = 'O';
       }
-            
-      jsonrequest = data;
-  
-      response = $scope.VerifierModel.get({
-        'lang': $scope.language,
-        'jsonrequest': jsonrequest
-      });
-      response.lang = $scope.language;
-      response.jsonrequest = jsonrequest;
-      response.$save(function(r) {
-        $scope.result = r;
-        console.log(r);
-        new_board = r.results[0].received;
-        console.log("the new board " + new_board);
-        $scope.game_history.push(new_board);
-      
-        //Check of board is valid       
-        if (!$scope.is_move_valid($scope.current_board, new_board)) {
+
+      $http.post('/play', data).success(function(res, status, headers, config) {
+        if(status!=200)
+          return;
+        console.log(res);
+
+        $scope.game_history.push(res.newBoard);
+        if (!res.isMoveValid) {
           current_player = (numX % 2 === 1)?'X':'O';
           $scope.winner = "Invalid play by Bot Player " + current_player + " detected in last play!!!";
           return false;
         }
-                
-        $scope.current_board = new_board;
-                
-        //Check if the game is over and who won. 
-        game_check = $scope.game_status($scope.current_board);
-        //Keep calling play_game until game is finished.
-        if (!game_check.finished) {
+
+        $scope.current_board = res.newBoard;
+        if (!res.gameStatus.finished) {
           $scope.play_game(playerX, playerO);
         } else {
-          $scope.winner = game_check.winner;
+          $scope.winner = res.gameStatus.winner;
         }
       });
     };
   
     $scope.verify = function(data) {
-      jsonrequest = data;
-  
-      $scope.status = "Verifying";
-      result = $scope.VerifierModel.get({
-        'lang': $scope.language,
-        'jsonrequest': jsonrequest
+      console.log(data);
+
+      data.lang = $scope.language;
+
+      $http.post('/play', data).success(function(res, status, headers, config) {
+        if(status!=200)
+          return;
+        console.log(res);
+        $scope.result = res.result;
       });
-      result.lang = $scope.language;
-      result.jsonrequest = jsonrequest
-      result.$save();
-      $scope.result = result;
-      return result;
+      
     };
   }
 ])
