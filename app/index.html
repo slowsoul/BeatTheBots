@@ -27,11 +27,11 @@
         <a class="navbar-brand" href="#">Gomoku Bots</a>
       </div>
       <div class="collapse navbar-collapse">
-        <ul id="navbar" class="nav navbar-nav">
+        <ul id="navbar" class="nav navbar-nav" ng-controller="SimpleAccessController">
           <li id="playground" class="active"><a href="#/playground" class="glyphicon glyphicon-tree-conifer"> Playground</a></li>
           <li id="workshop"><a href="#/workshop" class="glyphicon glyphicon-edit"> Workshop</a></li>
-          <li id="arena"><a href="#/arena" class="glyphicon glyphicon-tower"> Arena</a></li>
-          <li id="stats"><a href="#/stats" class="glyphicon glyphicon-stats"> Statistics</a></li>
+          <li id="arena" ng-show="uid"><a href="#/arena" class="glyphicon glyphicon-tower"> Arena</a></li>
+          <li id="stats" ng-show="uid"><a href="#/stats" class="glyphicon glyphicon-stats"> Statistics</a></li>
         </ul>
         <ul class="nav navbar-nav navbar-right" ng-controller="LoginController">
           <li ng-show="auth.user">
@@ -41,7 +41,7 @@
             <a href="" ng-click="auth.$logout()">Logout</a>
           </li>
           <li class="dropdown" ng-hide="auth.user">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Sign in <b class="caret"></b></a>
+            <a href="" class="dropdown-toggle" data-toggle="dropdown">Sign in <b class="caret"></b></a>
             <ul class="dropdown-menu">
               <li><a href="" ng-click="auth.$login('facebook')">with Facebook account</a></li>
               <li><a href="" ng-click="auth.$login('google')">with Google account</a></li>
@@ -59,13 +59,14 @@
   
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.14/angular.min.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.14/angular-route.min.js"></script>
-  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.14/angular-resource.min.js"></script>
   <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
   <script src="//cdn.firebase.com/js/client/1.0.6/firebase.js"></script>
   <script src="//cdn.firebase.com/js/simple-login/1.3.0/firebase-simple-login.js"></script>
   <script src="//cdn.firebase.com/libs/angularfire/0.7.0/angularfire.min.js"></script>
   <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.5.1/moment.min.js"></script>
   <script src="js/app.js"></script>
+  <script src="js/directives.js"></script>
   <script src="js/controllers.js"></script>
   
 </body>

@@ -1,113 +1,53 @@
-<div class="bs-callout bs-callout-info">
-  <h4>Introduction</h4>
-  <p>a 7*7 Gomoku board is used here. Empty board is represented by the string '_______,_______,_______,_______,_______,_______,_______', every part separated by the comma represents one row of the board.</p>
-  <p>The Gomoku bot that you can create is basically a function that determines its next move based on current board. That is, the function will return new board based on previous board and your player mark ('X' or 'O'). Three example bots written in JavaScript are provided below.</p>
-  <p>Once you have selected two bots, you can make them play and watch the steps and result by hitting the <b>Play bot 1 against bot 2</b> button.</p>
-  <p><b>Note:</b> For now, <b>only Javascript</b> is supported, more language options will be added soon. Please feel free to create your first Gomoku bot now!</p>
-</div>
-
-<h3>Create a new Bot</h3>
-<p style="display:inline-block">
-  Bot Name <br>
-  <textarea ng-model='new_bot.name'></textarea>
-</p>
-<p style="margin-left:60px;display:inline-block">
-  Language <br>
-  <select ng-model="new_bot.lang" ng-change="init_new_bot(new_bot.lang)" ng-options="item.language as item.urlName for item in supported_langugages"></select>
-</p>
-<p>
-  Bot Logic <br>
-  <textarea ng-model='new_bot.code' rows="8" cols="50"></textarea>
-</p>
-<button class="btn btn-default" type="submit" ng-click="add_bot()">Add Bot</button>
-
-<h3>Pick two Gomoku bots</h3>
-
-<table>
-  <tr>
-    <td>
-      <select ng-model="bot1" ng:change="set_bot_1(bot1)" ng-options="bot as bot.name for bot in bots" ng-init="bot1 = bots[0]"></select>
-    </td>
-    <td>
-      <select ng-model="bot2" ng:change="set_bot_2(bot2)" ng-options="bot as bot.name for bot in bots" ng-init="bot2 = bots[1]"></select>
-    </td>
-  </tr>
-  <tr>
-    <td>
-      {{bot1.name}}
-    </td>
-    <td>
-      {{bot2.name}}
-    </td>
-  </tr>
-  <tr>
-    <td>
-      <textarea ng-model="bot1.code" name="solution" rows="8" cols="40"></textarea>
-    </td>
-    <td>
-      <textarea ng-model="bot2.code" name="solution" rows="8" cols="40"></textarea>
-    </td>
-  </tr>
-</table>
-<br>
-
-<button class="btn btn-default" type="submit" ng-click="play_game(bot1,bot2)">Play bot 1 against bot 2</button>
-<button class="btn btn-default" type="submit" ng-click="reset_game()">Reset Game</button>
-
-<br>Game History
-<br>
-
-<div ng-repeat="board in game_history">
-  <table class="table table-bordered" style="width:175px;height:175px;text-align:center" >
-    <tr ng-repeat="line in board.split(',') track by $index">
-      <td ng-repeat="char in line track by $index" style="width:25px;height:25px;padding:0;border-color:black">
-        {{(char=='_')?' ':char}}
-      </td>
-    </tr>
-  </table>
-  <br>
-</div>
-<h4>Winner: <b style="color:red">{{winner}}</b></h4>
-
-<div class="bs-callout bs-callout-info">
-  <h4>Test your bot here</h4>
-  <p>You can select existing or self-created bot or write a draft of new bot in the 'Solution' section below. You can change the test below to verify your solution quickly.</p>
-</div>
-
-<select ng-model="language" ng:change="load_example_code()" ng-options="item.language as item.urlName for item in supported_langugages"></select>
-<br>
-<br>
-<button class="btn btn-default" type="submit" value="verify {{mapShowName(language)}} code" ng-click="verify({code: solution, test: tests})">verify {{mapShowName(language)}} code</button>
-<br>
-<br>
-Status: {{status}} Result: <pre>{{result}}</pre>
-Is Solved: <b>{{result.solved}}</b>
-<table border=1 bgcolor=#FFFFFF>
-  <tr>
-    <th>Called</th>
-    <th>Expected</th>
-    <th>Recieved</th>
-    <th>Correct</th>
-  </tr>
-  <tr ng-repeat="line in result.results">
-    <td>{{line.call}}</td>
-    <td>{{line.expected}}</td>
-    <td>{{line.received}}</td>
-    <td ng-show="line.correct" bgcolor=#00FF00>{{line.correct}}</td>
-    <td ng-show="!line.correct" bgcolor=#FF0000>{{line.correct}}</td>
-  </tr>
-</table>
-<br>
-
-<h4>Solution:</h4>
-<div>
-  <textarea ng-model="solution" name="solution" rows="8" cols="50"></textarea>
-</div>
-<h4>Tests:</h4>
-<div>
-  <textarea ng-model="tests" name="tests" rows="8" cols="50"></textarea>
+<div class="bs-callout bs-callout-info" style="display:none">
+	<h4>Introduction</h4>
+	<p>a 7*7 Gomoku board is used here. Empty board is represented by the string '_______,_______,_______,_______,_______,_______,_______', every part separated by the comma represents one row of the board.</p>
+	<p>The Gomoku bot that you can create is basically a function that determines its next move based on current board. That is, the function will return new board based on previous board and your player mark ('X' or 'O'). Three example bots written in JavaScript are provided below.</p>
+	<p>Once you have selected two bots, you can make them play and watch the steps and result by hitting the <b>Play bot 1 against bot 2</b> button.</p>
+	<p><b>Note:</b> For now, <b>only Javascript</b> is supported, more language options will be added soon. Please feel free to create your first Gomoku bot now!</p>
 </div>
 
 <br>
 <br>
-<span ng-init="load_example_code()"></span>
+<div class="row">
+  <div class="col-md-5">
+    <p>
+    <select class="form-control bot-select" ng-model="bot1" ng:change="set_bot_1(bot1)" ng-options="bot as bot.name for bot in bots" ng-init="bot1 = bots[0]"></select>
+    </p>
+    <p>
+      <textarea readonly ng-model="bot1.code" name="solution" rows="12" cols="50"></textarea>
+    </p>
+  </div>
+
+  <div class="col-md-5">
+    <p>
+    <select class="form-control bot-select" ng-model="bot2" ng:change="set_bot_2(bot2)" ng-options="bot as bot.name for bot in bots" ng-init="bot2 = bots[1]"></select>
+    </p>
+    <p>
+    <textarea readonly ng-model="bot2.code" name="solution" rows="12" cols="50"></textarea>
+    </p>
+  </div>
+
+  <div class="col-md-2" style="text-align:center">
+    <button class="btn btn-block btn-primary btn-lg" style="margin-top:55px" type="submit" ng-click="play_game(bot1,bot2)">Play Game</button>
+    <button class="btn btn-block btn-danger btn-lg" style="margin-top:40px" type="submit" ng-click="reset_game()">Reset Game</button>
+  </div>
+</div>
+
+<div class="row">
+  <div id="game-history-label" class="col-md-12">
+    <h3 ng-show="gameStarted">Game History</h3>
+  </div>
+  <div class="col-md-3" ng-repeat="board in game_history">
+    <table class="table table-bordered" style="width:175px;height:175px;text-align:center" >
+      <tr ng-repeat="line in board.split(',') track by $index">
+        <td ng-repeat="char in line track by $index" style="width:25px;height:25px;padding:0;border-color:black">
+          {{(char=='_')?' ':char}}
+        </td>
+      </tr>
+    </table>
+  </div>
+  <div class="col-md-12">
+    <h4 ng-show="gameStarted">Winner: <b style="color:red">{{winner}}</b></h4>
+  </div>
+</div>
+<br>

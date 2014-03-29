@@ -1,5 +1,5 @@
 var MongoClient = require('mongodb').MongoClient,
-    MONGO_PASSWORD = process.env.MONGO_PASSWORD, 
+    MONGO_PASSWORD = process.env.MONGO_PASSWORD,
     connection_string = 'mongodb://gomoku-admin:' + MONGO_PASSWORD + '@ds035137.mongolab.com:35137/gomoku-crowd-bots';
 
 module.exports.init = function (callback) {

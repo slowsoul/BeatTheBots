@@ -1,1 +1,66 @@
-<h3>Arena under development</h3>
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-md-3">
+			<h3>Select your bot</h3>
+			<div id="botlist" class="list-group" style="overflow-y:auto;height:500px">
+			  <a href="" class="list-group-item" ng-repeat="bot in bots track by $index" ng-click="load_bot($index)">
+			  	<span class="badge">{{bot.rating}}</span>
+			  	{{bot.name}}
+			  </a>
+			</div>
+		</div>
+		<div class="col-md-9" ng-show="showDetail">
+			<br>
+			<div class="row">
+				<div class="col-md-6">
+					<p>
+						Logic: <br>
+						<textarea readonly ng-model="selectedbot.code" rows="9" cols="50"></textarea>
+					</p>
+				</div>
+				<div ng-show="noOpAvailable" class="col-md-6">
+					<h3>Sorry, no opponent bots available now. Please try again later.</h3>
+				</div>
+				<div ng-show="opbotsLoaded" class="col-md-3" style="text-align:center;margin-top:25px">
+					<h1 ng-show="!ArenaEnded" style="margin-top:35px">Level {{currentLevel}}</h1>
+					<button ng-show="!ArenaEnded" ng-click="playLevel()" type="button" class="btn btn-lg btn-success" style="margin-top:30px">
+						<i class="glyphicon glyphicon-play"></i>
+						<strong>Play!</strong>
+					</button>
+					<h4 ng-show="ArenaEnded">{{EndingPrompt}}</h4>
+					<button ng-show="ArenaEnded" ng-click="reinitArena()" type="button" class="btn btn-success" style="margin-top:30px">
+						<i class="glyphicon glyphicon-repeat"></i>
+						<strong>Restart Arena!</strong>
+					</button>
+				</div>
+				<div ng-show="!opbotsLoaded" class="col-md-6" style="text-align:center;margin-top:50px">
+					<button ng-click="loadOpBots()" type="button" class="btn btn-lg btn-success" style="margin-top:30px">
+						<i class="glyphicon glyphicon-play"></i>
+						<strong>Begin Challenge!</strong>
+					</button>
+				</div>
+				<div ng-show="gameFinished" class="col-md-3" style="text-align:center;margin-top:20px">
+					<h1 style="margin-top:40px">{{readableResult}}</h1>
+					<h2 style="margin-top:30px">{{oldRating}} -> {{newRating}}</h2>
+				</div>
+			</div>
+			<div class="row">
+			  <div id="game-history-label" class="col-md-12">
+			    <h3 ng-show="gameStarted">Game History</h3>
+			  </div>
+			  <div class="col-md-3" ng-repeat="board in game_history">
+			    <table class="table table-bordered" style="width:175px;height:175px;text-align:center" >
+			      <tr ng-repeat="line in board.split(',') track by $index">
+			        <td ng-repeat="char in line track by $index" style="width:25px;height:25px;padding:0;border-color:black">
+			          {{(char=='_')?' ':char}}
+			        </td>
+			      </tr>
+			    </table>
+			  </div>
+			  <div class="col-md-12">
+			    <h4 ng-show="gameStarted">Winner: <b style="color:red">{{winner}}</b></h4>
+			  </div>
+			</div>
+		</div>
+	</div>
+</div>

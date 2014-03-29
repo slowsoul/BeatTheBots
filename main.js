@@ -5,6 +5,7 @@ var express = require('express'),
   querystring = require('querystring'),
   http = require('http'),
   btoa = require('btoa'),
+  moment = require('moment'),
   mongo = require('./mongo.js'),
   utility = require('./utility.js');
 
@@ -51,8 +52,6 @@ app.get('/', function(req, res) {
 
 app.get('/resetdb', function(req, res) {
   //reset Bot collection and GameRecord collection
-  console.log(mongo.BotCollection);
-  console.log(mongo.GameRecordCollection);
   mongo.BotCollection.remove(function(err, result){
     if(err){
       res.json({status: 'fail', description: 'remove failed'});
@@ -71,6 +70,7 @@ app.get('/resetdb', function(req, res) {
 });
 
 app.get('/bot', function(req, res) {
+  console.log(req.url);
   var params = url.parse(req.url, true).query;
   
   if(!params['uid']) {
@@ -80,6 +80,35 @@ app.get('/bot', function(req, res) {
     if(params['pickOp'] && params['pickOp'] == '1'){
       //pick at most 10 bots as opponents
       //ordered by rating, ascending
+      mongo.BotCollection.find({uid: {$ne: params['uid']}}, {sort:{rating: 1},fields:{code: 1, lang: 1, _id:1, rating:1}}).toArray(function(err, result){
+        if(err) {
+          res.json({status: 'fail', description: 'internal error'});
+        }
+        else {
+          if(result.length > 10){
+            newResult = [];
+            step = result.length/11.0;
+            index = 0;
+            for(var i=0;i<10;i++){
+              index = index + step;
+              newResult.push(result[Math.floor(index)]);
+            }
+            result = newResult;
+          }
+
+          res.json({status: 'success', bots: result});
+        }
+      });
+    }
+    else if(params['sortByRating'] && params['sortByRating'] == '1'){
+      mongo.BotCollection.find({uid: params['uid']}, {sort:{rating: -1}}).toArray(function(err, result){
+        if(err) {
+          res.json({status: 'fail', description: 'internal error'});
+        }
+        else {
+          res.json({status: 'success', bots: result});
+        }
+      });
     }
     else
     {
@@ -121,7 +150,25 @@ app.get('/record/:bid', function(req, res) {
       res.json({status: 'fail', description: 'internal error'});
     }
     else{
-      res.json({status: 'success', records: result});
+      transformedRecords = [];
+      for(var i=0;i<result.length;i++){
+        var singleRecord = {};
+        if(result[i].bidA == bid) {
+          singleRecord.finishTime = moment(result[i].finishTime).format('MMMM Do YYYY, h:mm:ss a');
+          singleRecord.ratingChange = result[i].ratingA + ' -> ' + (result[i].ratingA + result[i].ratingChangeA);
+          singleRecord.gameResult = (result[i].winner == "Win")?"Win":((result[i].winner == "Tie")?"Tie":"Lose");
+          singleRecord.opbid = result[i].bidB;
+        }
+        else {
+          singleRecord.finishTime = moment(result[i].finishTime).format('MMMM Do YYYY, h:mm:ss a');
+          singleRecord.ratingChange = result[i].ratingB + ' -> ' + (result[i].ratingB - result[i].ratingChangeA);
+          singleRecord.gameResult = (result[i].winner == "Win")?"Lose":((result[i].winner == "Tie")?"Tie":"Win");
+          singleRecord.opbid = result[i].bidA;
+        }
+        transformedRecords.push(singleRecord);
+      }    
+
+      res.json({status: 'success', records: transformedRecords});
     }
   });
 
@@ -273,10 +320,10 @@ app.post('/rating', function(req, res) {
   var mybid = req.body['mybid'],
     opbid = req.body['opbid'],
     iwin = req.body['iwin'],
-    myRating = null,
-    opRating = null;
+    myRating = req.body['myRating'],
+    opRating = req.body['opRating'];
 
-  if(mybid && opbid && iwin){
+  if(mybid && opbid && iwin && myRating && opRating && (iwin == "Win" || iwin == "Tie" || iwin == "Lose")){
     //bot A will always be current user's bot
     //update rating of both bot A and B, then save the game data to game record collection
     //return the new rating for user's bot
@@ -290,7 +337,7 @@ app.post('/rating', function(req, res) {
         res.json({status: 'fail', description: 'mybid not exist'});
         return;
       }
-      myRating = result.rating;
+      myOldRating = result.rating;
       mongo.BotCollection.findOne({_id: ObjectID(opbid)}, {fields: {rating: 1, _id: 0}}, function(err, result){
         if(err) {
           res.json({status: 'fail', description: 'internal error'});
@@ -300,9 +347,10 @@ app.post('/rating', function(req, res) {
           res.json({status: 'fail', description: 'opbid not exist'});
           return;
         }
-        opRating = result.rating;
+        opOldRating = result.rating;
+
         //calculate rating change
-        var myActualScore = (iwin == '1')?1:((iwin == '0')?0.5:0);
+        var myActualScore = (iwin == "Win")?1:((iwin == "Tie")?0.5:0);
         var myExpectedScore = 1 / (1 + Math.pow(10, (opRating - myRating)/400));
         var myRatingChange;
         if(myRating < 2100 || opRating < 2100) {
@@ -317,10 +365,10 @@ app.post('/rating', function(req, res) {
         myRatingChange = Math.floor(myRatingChange);
 
         //update rating for both bots
-        mongo.BotCollection.update({_id: ObjectID(mybid)}, {$set: {rating: myRating + myRatingChange}, $inc: {gameCount: 1}}, {w: 1}, function(err, result){
-          mongo.BotCollection.update({_id: ObjectID(opbid)}, {$set: {rating: opRating - myRatingChange}, $inc: {gameCount: 1}}, {w: 1}, function(err, result){
-            mongo.GameRecordCollection.insert({finishTime: new Date(), bidA: mybid, bidB: opbid, winner: iwin, ratingA: myRating, ratingB: opRating, ratingChangeA: myRatingChange}, {w: 1}, function(err, result){
-              res.json({status: 'success', myNewRating: myRating + myRatingChange});  
+        mongo.BotCollection.update({_id: ObjectID(mybid)}, {$inc: {rating: myRatingChange, gameCount: 1}}, {w: 1}, function(err, result){
+          mongo.BotCollection.update({_id: ObjectID(opbid)}, {$inc: {rating: 0-myRatingChange, gameCount: 1}}, {w: 1}, function(err, result){
+            mongo.GameRecordCollection.insert({finishTime: new Date(), bidA: mybid, bidB: opbid, winner: iwin, ratingA: myOldRating, ratingB: opOldRating, ratingChangeA: myRatingChange}, {w: 1}, function(err, result){
+              res.json({status: 'success', myOldRating: myOldRating, myNewRating: myOldRating + myRatingChange});  
             });
           });
         });

@@ -1,1 +1,46 @@
-<h3>Stats under development</h3>
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-md-3">
+			<h3>Select your bot</h3>
+			<div id="botlist" class="list-group" style="overflow-y:auto;height:500px">
+			  <a href="" class="list-group-item" ng-repeat="bot in bots track by $index" ng-click="load_bot($index)">
+			  	<span class="badge">{{bot.rating}}</span>
+			  	{{bot.name}}
+			  </a>
+			</div>
+		</div>
+		<div class="col-md-9" ng-show="showDetail">
+			<div class="row">
+				<h3>Bot Stats</h3>
+				<div class="col-md-9">
+					<p>Name: {{selectedbot.name}}</p>
+					<p>Language: {{mapShowName(selectedbot.lang)}}</p>
+					<p>
+						Logic: <br>
+						<textarea readonly ng-model="selectedbot.code" rows="9" cols="50"></textarea>
+					</p>
+				</div>
+				<div class="col-md-3">
+					<h2>Rating: {{selectedbot.rating}}</h2>
+					<h2>Games played: {{selectedbot.gameCount}}</h2>
+				</div>
+			</div>
+			<div ng-show="records.length == 0">
+				<h2>Haven't played arena game so far...</h2>
+			</div>
+			<div ng-show="records.length > 0" >
+				<h3>Detailed Record:</h3>
+				<div style="overflow-y:auto;height:200px">
+				<table class="table table-bordered table-striped">
+					<tr><th>Result</th><th>Rating change</th><th>Game time</th></tr>
+					<tr ng-repeat="record in records">
+						<td>{{record.gameResult}}</td>
+						<td>{{record.ratingChange}}</td>
+						<td>{{record.finishTime}}</td>
+					</tr>	
+				</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

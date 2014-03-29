@@ -23,3 +23,7 @@ body {
 table {
   min-width:3.5em;
 }
+
+.bot-select {
+  width:150px;
+}

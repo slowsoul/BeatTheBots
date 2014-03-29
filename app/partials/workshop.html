@@ -1,1 +1,59 @@
-<h3>Workshop under development</h3>
+<br>
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-md-6">
+			<h3>Create a new Bot</h3>
+			<p>
+				Start from existing bots
+				<select class="form-control bot-select" ng-model="existingbot" ng-change="set_new_bot(existingbot)" ng-options="bot as bot.name for bot in bots">
+					<option value="">Choose here</option>
+				</select>
+			</p>
+			<p style="display:inline-block">
+  			Bot Name <br>
+  			<textarea ng-model='new_bot.name'></textarea>
+			</p>
+			<p style="margin-left:60px;display:inline-block">
+			  Language <br>
+			  <select class="form-control bot-select" ng-model="new_bot.lang" ng-change="init_new_bot(new_bot.lang)" ng-options="item.language as item.urlName for item in supported_langugages"></select>
+			</p>
+			<p>
+			  Bot Logic <br>
+			  <textarea ng-model='new_bot.code' rows="8" cols="50"></textarea>
+			</p>
+			<button class="btn btn-primary" type="submit" ng-click="add_bot()">Add Bot</button>
+			<br><br>
+			<div class="alert alert-danger" ng-show="addresult && addresult.status == 'fail'">
+				<b>Error: </b>{{addresult.description}}
+			</div>
+			<div class="alert alert-success" ng-show="addresult && addresult.status != 'fail'">
+				<b>"{{last_bot_name}}" </b>successfully added!
+			</div>
+		</div>
+		<div class="col-md-6">
+			<h3>Write test here</h3>
+			<div>
+			  <textarea ng-model="tests" name="tests" rows="8" cols="60"></textarea>
+			</div>
+			<br>
+			<button class="btn btn-primary" type="submit" value="Test {{mapShowName(new_bot.lang)}} code" ng-click="test({code: new_bot.code, test: tests})">Test {{mapShowName(new_bot.lang)}} code</button>
+			<br><br>
+			<pre ng-show="errors">{{errors}}</pre>
+			<table ng-show="result" border=1 bgcolor=#FFFFFF>
+			  <tr>
+			    <th>Expected</th>
+			    <td>{{result.expected}}</td>
+			  </tr>
+			  <tr>
+			    <th>Received</th>
+			    <td>{{result.received}}</td>
+			  </tr>
+			  <tr>
+			    <th>Correct</th>
+			    <td ng-show="result.correct" bgcolor=#00FF00>{{result.correct}}</td>
+			    <td ng-show="!result.correct" bgcolor=#FF0000>{{result.correct}}</td>
+			  </tr>
+			</table>
+		</div>
+	</div>
+</div>
