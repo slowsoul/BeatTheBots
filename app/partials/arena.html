@@ -2,7 +2,7 @@
 	<div class="row">
 		<div class="col-md-3">
 			<h3>Select your bot</h3>
-			<div id="botlist" class="list-group" style="overflow-y:auto;height:500px">
+			<div id="botlist" class="list-group" style="overflow-y:auto;height:460px">
 			  <a href="" class="list-group-item" ng-repeat="bot in bots track by $index" ng-click="load_bot($index)">
 			  	<span class="badge">{{bot.rating}}</span>
 			  	{{bot.name}}
@@ -10,7 +10,6 @@
 			</div>
 		</div>
 		<div class="col-md-9" ng-show="showDetail">
-			<br>
 			<div class="row">
 				<div class="col-md-6">
 					<p>

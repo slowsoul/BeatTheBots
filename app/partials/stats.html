@@ -2,7 +2,7 @@
 	<div class="row">
 		<div class="col-md-3">
 			<h3>Select your bot</h3>
-			<div id="botlist" class="list-group" style="overflow-y:auto;height:500px">
+			<div id="botlist" class="list-group" style="overflow-y:auto;height:460px">
 			  <a href="" class="list-group-item" ng-repeat="bot in bots track by $index" ng-click="load_bot($index)">
 			  	<span class="badge">{{bot.rating}}</span>
 			  	{{bot.name}}
@@ -11,7 +11,6 @@
 		</div>
 		<div class="col-md-9" ng-show="showDetail">
 			<div class="row">
-				<h3>Bot Stats</h3>
 				<div class="col-md-9">
 					<p>Name: {{selectedbot.name}}</p>
 					<p>Language: {{mapShowName(selectedbot.lang)}}</p>
@@ -29,8 +28,8 @@
 				<h2>Haven't played arena game so far...</h2>
 			</div>
 			<div ng-show="records.length > 0" >
-				<h3>Detailed Record:</h3>
-				<div style="overflow-y:auto;height:200px">
+				<h4>Detailed Record:</h4>
+				<div style="overflow-y:auto;height:190px">
 				<table class="table table-bordered table-striped">
 					<tr><th>Result</th><th>Rating change</th><th>Game time</th></tr>
 					<tr ng-repeat="record in records">
