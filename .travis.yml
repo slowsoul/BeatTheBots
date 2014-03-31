@@ -1,0 +1,14 @@
+language: node_js
+node_js:
+- '0.10'
+before_script:
+- npm install -g grunt-cli
+notifications:
+  email:
+    on_success: change
+    on_failure: always
+deploy:
+  provider: heroku
+  app: gomoku-crowd-bots
+  api_key:
+    secure: PqNfqZnffl8JzoBd8UtaQMzN0H62UZP5jLx60GK1mJe5QhAv9XytHU14y1J5oowOFz+gKDyUVmbWwLoRUvWiSAfoRwea58zEJBi04/n7tbdPow0FuuufrlpUitZU0B4NcE7Q1Vz0INNmOzFkO7PhXPvVvLWqGyOfcQiHmrxSzGE=

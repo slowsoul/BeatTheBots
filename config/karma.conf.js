@@ -20,6 +20,7 @@ module.exports = function(config) {
       'test/lib/angular/angular-mocks.js',
       'app/lib/firebase.js',
       'app/lib/angularfire.min.js',
+      'app/lib/jquery.min.js',
       'app/js/**/*.js',
       'test/unit/**/*.js'
     ],
@@ -38,7 +39,6 @@ module.exports = function(config) {
       'karma-mocha',
       'karma-spec-reporter',
       'karma-chai-plugins',
-      'karma-chrome-launcher',
       'karma-phantomjs-launcher'
     ],
 
@@ -67,7 +67,7 @@ module.exports = function(config) {
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: ['Chrome', 'PhantomJS'],
+    browsers: ['PhantomJS'],
 
 
     // Continuous Integration mode

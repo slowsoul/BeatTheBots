@@ -64,18 +64,6 @@ angular.module('myApp.controllers', ['firebase'])
     $scope.auth = $firebaseSimpleLogin(ref);
   }
 ])
-.controller("SimpleAccessController", ["$rootScope", "$scope",
-  function($rootScope, $scope) {
-    $rootScope.$on("$firebaseSimpleLogin:login", function(e, user) {
-      console.log("SimpleAccess");
-      $scope.uid = user.uid;
-    });
-
-    $rootScope.$on("$firebaseSimpleLogin:logout", function(e, user) {
-      $scope.uid = null;
-    });
-  }
-])
 .controller("PlaygroundController", ["$rootScope", "$scope", "$http", "BotsFactory", "UserFactory",
   function($rootScope, $scope, $http, BotsFactory, UserFactory) {
 
@@ -208,7 +196,7 @@ angular.module('myApp.controllers', ['firebase'])
       urlName: 'Python'
     }];
 
-    bot_template = {
+    $scope.bot_template = {
       'js': "function play_game(board,side) {\n  return '\n}",
       'python': "def play_game(board,side):\n  return '"
     };
@@ -235,7 +223,7 @@ angular.module('myApp.controllers', ['firebase'])
 
     $scope.init_new_bot = function(lang) {
       $scope.new_bot.name = "New " + $scope.mapShowName(lang) + " Bot";
-      $scope.new_bot.code = bot_template[lang];
+      $scope.new_bot.code = $scope.bot_template[lang];
       $scope.new_bot.lang = lang;
       $scope.tests = $scope.test_template[lang]["tests"];
     };
