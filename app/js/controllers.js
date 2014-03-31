@@ -64,6 +64,18 @@ angular.module('myApp.controllers', ['firebase'])
     $scope.auth = $firebaseSimpleLogin(ref);
   }
 ])
+.controller("SimpleAccessController", ["$rootScope", "$scope",
+  function($rootScope, $scope) {
+    $rootScope.$on("$firebaseSimpleLogin:login", function(e, user) {
+      console.log("SimpleAccess");
+      $scope.uid = user.uid;
+    });
+
+    $rootScope.$on("$firebaseSimpleLogin:logout", function(e, user) {
+      $scope.uid = null;
+    });
+  }
+])
 .controller("PlaygroundController", ["$rootScope", "$scope", "$http", "BotsFactory", "UserFactory",
   function($rootScope, $scope, $http, BotsFactory, UserFactory) {
 
