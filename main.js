@@ -50,6 +50,7 @@ app.get('/', function(req, res) {
   res.redirect('app/index.html');
 });
 
+/*
 app.get('/resetdb', function(req, res) {
   //reset Bot collection and GameRecord collection
   mongo.BotCollection.remove(function(err, result){
@@ -68,6 +69,7 @@ app.get('/resetdb', function(req, res) {
     }   
   });
 });
+*/
 
 app.get('/bot', function(req, res) {
   console.log(req.url);
