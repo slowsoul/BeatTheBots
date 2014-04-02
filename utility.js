@@ -46,27 +46,6 @@ module.exports.game_status = function(board) {
     }
   }
         
-  //Diagonal
-  for(var i = 0; i < 3; i++) {
-    for(var j = 0; j < 3; j++) {
-      if (board[8*j+i] != '_' && board[8*j+i] == board[8*(j+1)+i+1] && board[8*(j+1)+i+1] == board[8*(j+2)+i+2] && board[8*(j+2)+i+2] == board[8*(j+3)+i+3] && board[8*(j+3)+i+3] == board[8*(j+4)+i+4]) {
-        return {
-          finished: true,
-          winner: board[8*j+i]
-        };
-      }     
-    }
-          
-    for(var j = 4; j < 7; j++) {
-      if (board[8*j+i] != '_' && board[8*j+i] == board[8*(j-1)+i+1] && board[8*(j-1)+i+1] == board[8*(j-2)+i+2] && board[8*(j-2)+i+2] == board[8*(j-3)+i+3] && board[8*(j-3)+i+3] == board[8*(j-4)+i+4]) {
-        return {
-          finished: true,
-          winner: board[8*j+i]
-        };
-      } 
-    }
-  }
-        
   //Full board
   if (board.indexOf('_') === -1) {
     return {
