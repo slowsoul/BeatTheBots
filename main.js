@@ -269,7 +269,7 @@ app.post('/play', function(req, res) {
     });
 
     var options = {
-      host : 'ec2-54-251-204-6.ap-southeast-1.compute.amazonaws.com',
+      host : '162.222.183.53',
       path : '/' + lang,
       method : 'POST',
       headers : {
